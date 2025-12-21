@@ -17,3 +17,9 @@
   become: yes
   roles:
     - geerlingguy.mysql
+
+- name: Install Node exporter di semua server
+  hosts: all
+  become: true
+  roles:
+    - geerlingguy.node_exporter
