@@ -1,0 +1,27 @@
+#SPDX-License-Identifier: MIT-0
+---
+# tasks file for haproxy_lb
+
+- name: Update apt repository
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+
+
+- name: Install HA Proxy
+  apt:
+    name: haproxy
+    state: present
+
+
+- name: copy HAProxy Configuration
+  template:
+    src: haproxy.cfg.j2
+    dest: /etc/haproxy/haproxy.cfg
+  notify: Restart HAProxy
+
+- name: Memastikan HAProxy berjalan
+  service:
+    name: haproxy
+    state: started
+    enabled: yes

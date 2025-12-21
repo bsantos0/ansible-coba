@@ -1,0 +1,19 @@
+
+- name: Deploy Web Server memakai roles
+  hosts: webservers
+  serial: 1
+  become: yes
+  roles:
+    - nginx_server
+
+- name: Deploy HAproxy Load Balancer
+  hosts: loadbalancer
+  become: yes
+  roles:
+    - haproxy_lb
+
+- name: Deploy MYSQL
+  hosts: dbservers
+  become: yes
+  roles:
+    - geerlingguy.mysql

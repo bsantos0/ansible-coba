@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ tipe_server }}</title>
+</head>
+<body>
+    <h1>Halo kaka! V3</h1>
+    <p>Ini adalah server: <b>{{ ansible_hostname }}</b></p>
+    <p>Status: {{ tipe_server }} </p>
+    <p>Tugas saya adalah: <b>{{ deskripsi_pekerjaan }}</b></p>
+    <p>IP Address saya: <b>{{ ansible_default_ipv4.address }}</b></p>
+    <p>OS: {{ ansible_distribution }} {{ ansible_distribution_version }}</p>
+    <hr>
+    <p style="color: red;">RAHASIA NEGARA (Jangan disebar): <b>{{ password_db_rahasia }}</b></p>
+    <hr>
+    <i>Dideploy otomatis oleh Ansible pada {{ ansible_date_time.date }}</i>
+</body>
+</html>

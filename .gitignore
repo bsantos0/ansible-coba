@@ -1,0 +1,18 @@
+# Abaikan file retry (file sampah kalau playbook error)
+*.retry
+
+# Abaikan log file
+*.log
+
+# Abaikan folder temporary
+tmp/
+
+# Abaikan kunci SSH atau file rahasia lainnya (Jaga-jaga)
+.ssh/
+id_rsa
+*.pem
+
+# Abaikan file konfigurasi IDE
+.vscode/
+.idea/
+.DS_Store

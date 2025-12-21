@@ -1,0 +1,78 @@
+#SPDX-License-Identifier: MIT-0
+---
+# tasks file for nginx_server
+- name: Update repository apt
+  apt:
+    update_cache: yes
+
+- name: Install Nginx
+  apt:
+    name: nginx
+    state: present
+
+- name: Install PHP dan module nginx
+  apt:
+    name:
+      - php-fpm
+      - php-mysql
+      - php-curl
+      - php-gd
+      - php-intl
+      - php-mbstring
+      - php-soap
+      - php-xml
+      - php-xmlrpc
+      - php-zip
+      - unzip
+    state: present
+  notify: Restart Nginx
+
+- name: Copy konfigurasi NginX agar membaca PHP
+  template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/sites-available/default
+  notify: Restart Nginx
+
+- name: Pastikan Nginx jalan
+  service:
+    name: nginx
+    state: started
+    enabled: yes
+
+- name: bersihkan isi html folder lama
+  file:
+    path: /var/www/html
+    state: absent
+
+- name: buat folder html baru
+  file:
+    path: /var/www/html/
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: '0755'
+
+- name: extract wordpress dari controller ke server target
+  unarchive:
+    src: wordpress.zip
+    dest: /var/www/html
+    remote_src: no
+    creates: /var/www/html/wordpress
+
+- name: Pindahkan isi folder wordpress ke root html
+  shell: "mv /var/www/html/wordpress/* /var/www/html/ && rmdir /var/www/html/wordpress"
+  ignore_errors: yes
+
+- name: Deploy wp-config.php dari template
+  template:
+    src: wp-config.php.j2
+    dest: /var/www/html/wp-config.php
+    owner: www-data
+    group: www-data
+
+- name: memastikan permission file benar (www-data)
+  file:
+    path: /var/www/html
+    owner: www-data
+    group: www-data
+    recurse: yes

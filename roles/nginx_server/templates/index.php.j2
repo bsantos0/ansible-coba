@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tes Koneksi Database</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; padding-top: 50px; }
+        .success { color: green; }
+        .fail { color: red; }
+    </style>
+</head>
+<body>
+    <h1>Laporan dari Web Server: {{ ansible_hostname }}</h1>
+    <p>IP Address saya: {{ ansible_default_ipv4.address }}</p>
+    <hr>
+    
+    <?php
+    // Mengambil IP Database dari Inventory Ansible secara otomatis!
+    $servername = "{{ groups['dbservers'][0] }}";
+    $username = "budi";
+    $password = "budi123";
+    $dbname = "app_db";
+
+    // Coba Connect
+    $conn = new mysqli($servername, $username, $password, $dbname);
+
+    // Cek Error
+    if ($conn->connect_error) {
+        echo "<h2 class='fail'>Koneksi GAGAL :(</h2>";
+        echo "<p>Error: " . $conn->connect_error . "</p>";
+    } else {
+        echo "<h2 class='success'>Koneksi BERHASIL! :D</h2>";
+        echo "<p>Saya berhasil masuk ke database <b>$dbname</b> di server <b>$servername</b></p>";
+    }
+    ?>
+</body>
+</html>
