@@ -1,0 +1,35 @@
+- name: Install Monitoring Server (prometheus&Grafana)
+  hosts: monitor
+  become: true
+  vars:
+    prometheus_web_listen_address: "0.0.0.0:9090"
+    prometheus_storage_retention: "30d"
+    prometheus_scrape_configs:
+      - job_name: 'node'
+        scrape_interval: 15s
+        static_configs:
+          - targets: "{{ groups['all'] | map('regex_replace', '$', ':9100') | list }}"
+    grafana_security:
+      admin_user: admin
+      admin_password: admin123
+    grafana_ip: "0.0.0.0"
+    grafana_port: 3000
+    grafana_datasources:
+      - name: Prometheus
+        type: prometheus
+        access: proxy
+        url: 'http://localhost:9090'
+        basicAuth: false
+  roles:
+    - role: prometheus.prometheus.prometheus
+      vars:
+        prometheus_version: "2.45.0"
+    - role: hax0rbana_adam.grafana
+      vars:
+        grafana_security:
+          admin_user: admin
+          admin_password: admin123
+        grafana_dashboards:
+          - dashboard_id: 1860
+            revision_id: 37
+            datasource: Prometheus
