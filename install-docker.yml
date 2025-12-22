@@ -1,0 +1,46 @@
+---
+- name: Install Docker di Server Target
+  hosts: all
+  become: true
+  tasks:
+    - name: Install paket prasyarat
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg
+          - lsb-release
+          - python3-pip
+        state: present
+        update_cache: yes
+
+    - name: Tambahkan GPG Key resmi Docker
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Tambahkan repository Docker ke APT
+      apt_repository:
+        repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+        state: present
+
+    - name: Install Docker Engine
+      apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+        state: present
+        update_cache: yes
+
+    - name: Pastikan service Docker berjalan
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Install Module Python untuk Docker (Agar Ansible bisa kontrol Docker nantilewat apt)
+      apt:
+        name: python3-docker
+        state: present

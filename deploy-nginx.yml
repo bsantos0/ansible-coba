@@ -1,0 +1,13 @@
+---
+- name: Deploy Nginx Container ke Semua Server
+  hosts: all
+  become: true
+  tasks:
+    - name: Jalankan Nginx Container
+      community.docker.docker_container:
+        name: my-webserver          # Nama container
+        image: nginx:latest         # Image yang didownload
+        state: started
+        restart_policy: always      # Auto-start kalau server reboot
+        ports:
+          - "8080:80"               # Port Host 8080 -> Port Container 80
