@@ -1,0 +1,19 @@
+- name: Deploy wordpress stack (App+DB)
+  hosts: webservers
+  become: true
+  tasks:
+    - name: Buat folder worpress
+      file:
+        path: /opt/my-wordpress
+        state: directory
+        mode: '0755'
+
+    - name: Copy Docker-Compose
+      copy:
+        src: docker-compose.yml
+        dest: /opt/my-wordpress/docker-compose.yml
+
+    - name: Jalankan Stack Wordpress
+      community.docker.docker_compose_v2:
+        project_src: /opt/my-wordpress
+        state: present
