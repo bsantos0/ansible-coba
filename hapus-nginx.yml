@@ -1,0 +1,26 @@
+---
+- name: Hapus Nginx Native (Bukan Docker) dari Host
+  hosts: all
+  become: true
+  tasks:
+    - name: 1. Stop service Nginx jika sedang berjalan
+      service:
+        name: nginx
+        state: stopped
+      ignore_errors: yes  # Lanjut terus meski nginx memang tidak ada/mati
+
+    - name: 2. Uninstall Nginx dan bersihkan config (Purge)
+      apt:
+        name: 
+          - nginx
+          - nginx-common
+          - nginx-core
+        state: absent
+        purge: yes        # PENTING: Hapus juga file konfigurasi (/etc/nginx)
+        autoremove: yes   # Hapus dependency yang tidak terpakai lagi
+
+    - name: 3. Hapus sisa folder html default (Opsional)
+      file:
+        path: /var/www/html
+        state: absent
+      ignore_errors: yes
