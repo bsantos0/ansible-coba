@@ -3,6 +3,13 @@
   hosts: all
   become: true
   tasks:
+    - name: Copy file HTML ke NginX Container
+      copy:
+         src: index.html
+         desc: /tmp/index.html
+         mode: '0644'
+
+
     - name: Jalankan Nginx Container
       community.docker.docker_container:
         name: my-webserver          # Nama container
@@ -11,3 +18,6 @@
         restart_policy: always      # Auto-start kalau server reboot
         ports:
           - "8080:80"               # Port Host 8080 -> Port Container 80
+        volume:
+          - "/tmp/index.html:/usr/share/nginx/html/index.html:ro"
+        recreate: yes
