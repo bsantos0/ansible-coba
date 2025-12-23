@@ -6,7 +6,7 @@
     - name: Copy file HTML ke NginX Container
       copy:
          src: index.html
-         desc: /tmp/index.html
+         dest: /tmp/index.html
          mode: '0644'
 
 
