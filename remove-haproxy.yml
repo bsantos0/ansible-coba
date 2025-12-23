@@ -1,0 +1,21 @@
+- name: Hapus HAProxy dari server tertentu
+  hosts: 192.168.61.230
+  become: true
+  tasks:
+    - name: Stop service Ha Proxy
+      service:
+        name: haproxy
+        state: stopped
+      ignore_errors: yes
+
+    - name: Hapus Ha-Proxy
+      apt:
+        name: haproxy
+        state: absent
+        purge: yes
+        autoremove: yes
+
+    - name: hapus sisa folder config
+      file:
+        path: /etc/haproxy
+        state: absent
