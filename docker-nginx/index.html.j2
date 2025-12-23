@@ -11,5 +11,7 @@
     <h1>Halo, Saya Budi Santoso! 👋</h1>
     <p>Website ini dideploy otomatis menggunakan <b>Ansible + Docker</b>.</p>
     <p>Server: Nginx Container</p>
+    <p>IP Address web: <b>{{ ansible_default_ipv4.address }}</b></p>
+    <p>OS: {{ ansible_distribution }} {{ ansible_distribution_version }}</p>
 </body>
 </html>

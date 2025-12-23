@@ -4,8 +4,8 @@
   become: true
   tasks:
     - name: Copy file HTML ke NginX Container
-      copy:
-         src: index.html
+      template:
+         src: index.html.j2
          dest: /tmp/index.html
          mode: '0644'
 
