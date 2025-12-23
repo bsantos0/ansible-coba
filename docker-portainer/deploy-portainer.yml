@@ -1,0 +1,23 @@
+- name: Membuat Portainer 
+  hosts: all
+  become: true
+  tasks:
+    - name: Membuat volume portainer
+      community.docker.docker_volume:
+        name: portainer-data
+
+    - name: Deploy Portainer Container
+      community.docker.docker_container:
+        name: portainer
+        image: portainer/portainer-ce:latest
+        state: started
+        restart_policy: always
+        recreate: yes
+        privileged: yes
+        security_opts:
+          - "apparmor:unconfined"
+        ports:
+          - "9000:9000"
+        volumes:
+          - "/var/run/docker.sok:/var/run/docker.sock"
+          - "portainer_data:/data"
