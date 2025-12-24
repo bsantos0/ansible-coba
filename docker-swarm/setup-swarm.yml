@@ -1,0 +1,35 @@
+- name: Inisial Docker Swarm Manager
+  hosts: managers
+  become: true
+  tasks:
+    - name: Cek status Swarm
+      shell: docker info --format '{{ "{{" }} .Swarm.LocalNodeState {{ "}}" }}'
+      register: swarm_status
+      changed_when: false
+
+    - name: Inisialisasi Manager (Jika belum aktif)
+      shell: docker swarm init --advertise-addr {{ inventory_hostname }}
+      when: swarm_status.stdout != "active"
+
+    - name: Ambil Join Token untuk Worker
+      shell: docker swarm join-token -q worker
+      register: worker_token
+      changed_when: false
+
+    - name: Simpan Token ke Variabel Global (Agar bisa dibaca oleh host lain)
+      set_fact:
+        global_worker_token: "{{ worker_token.stdout }}"
+        manager_ip: "{{ inventory_hostname }}"
+
+- name: Join Worker Nodes ke Cluster
+  hosts: workers
+  become: true
+  tasks:
+    - name: Cek status Swarm di Worker
+      shell: docker info --format '{{ "{{" }} .Swarm.LocalNodeState {{ "}}" }}'
+      register: worker_swarm_status
+      changed_when: false
+
+    - name: Gabung ke Cluster sebagai Worker
+      shell: "docker swarm join --token {{ hostvars[groups['managers'][0]]['global_worker_token'] }} {{ hostvars[groups['managers'][0]]['manager_ip'] }}:2377"
+      when: worker_swarm_status.stdout != "active"
