@@ -1,0 +1,22 @@
+- name: Update Service Tanpa Downtime
+  hosts: managers
+  become: true
+  tasks:
+    - name: hapus service bermasalah
+      community.docker.docker_swarm_service:
+        name: my-cluster-web
+        state: absent
+
+    - name: update image menggunakan nginx cluster
+      community.docker.docker_swarm_service:
+        name: my-cluster-web
+        image: nginxdemos/hello:latest
+        replicas: 5
+        publish:
+          - published_port: 8000
+            target_port: 80
+        update_config:
+          parallelism: 1
+          delay: 5s
+          order: start-first
+        state: present
