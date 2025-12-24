@@ -1,0 +1,52 @@
+- name: Membuat NSF Server di manager
+  hosts: managers
+  become: true
+  tasks:
+    - name: Install paket NFS
+      apt:
+        name: nfs-kernel-server
+        state: present
+
+    - name: Buat folder gudang data
+      file:
+        path: /srv/nfs/web-data
+        state: directory
+        mode: '0777'
+
+    - name: buat file index.html default
+      copy:
+        dest: /srv/nfs/web-data/index.html
+        content: "<h1>Halo dari Shared Storage NFS!</h1><p>File ini ada di Manager, tapi dibaca oleh semua Worker.</p>"
+
+    - name: Konfigurasi Export
+      lineinfile:
+        path: /etc/exports
+        line: "/srv/nfs/web-data *(rw,sync,no_subtree_check)"
+        state: present
+
+    - name: Restart NFS Server
+      service:
+        name: nfs-kernel-server
+        state: restarted
+
+
+- name: Mount NFS di semua Node
+  hosts: all
+  become: true
+  tasks:
+    - name: Install paket NFS Client
+      apt:
+        name: nfs-common
+        state: present
+
+    - name: buat titik mount lokal
+      file:
+        path: /mnt/shared-web
+        state: directory
+
+    - name: Mount Folder NFS dari Manager
+      mount:
+        path: /mnt/shared-web
+        src: "192.168.61.235:/srv/nfs/web-data"
+        fstype: nfs
+        state: mounted
