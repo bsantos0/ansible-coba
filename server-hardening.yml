@@ -1,0 +1,45 @@
+- name: penguatan server 
+  hosts: all
+  become: true
+  tasks:
+    #update repository
+    - name: update apt cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+    #Install Tool Monitor standart
+    - name: install Tool monitoring standart
+      apt:
+        name:
+          - htop
+          - net-tools
+          - vim
+          - ufw
+        state: present
+
+    #konfigurasi firewall
+    - name: konfigurasi firewall
+      ufw:
+        rule: allow
+        port: "{{ item }}"
+        proto: tcp
+      loop:
+          - '80'
+          - '443'
+          - '8000'
+          - '8888'
+          - '22'
+
+    - name: allow docker swarm internal comm
+      ufw:
+        rule: allow
+        port: "{{ item }}"
+      loop:
+          - '2377'
+          - '7946'
+          - '4789'
+
+    - name: aktifkan Firewall
+      ufw:
+        state: enabled
+        policy: deny #tolak semua koneksi selain diatas
